@@ -8,9 +8,13 @@ Repositório central para o grupo de estudos focado em introdução à seguranç
 
 ## 👥 Tutores
 Lucas Fávero:
+
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/luquinhaalho)
+
 [![Discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/channels/@luquinhaalho/)
+
 Floro Neto:
+
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/floro-neto)
 
 
