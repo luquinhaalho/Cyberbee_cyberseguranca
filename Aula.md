@@ -1,3 +1,7 @@
+<p align="center">
+ <img width="300" alt="Image" src="https://github.com/user-attachments/assets/b0a04c83-d844-4341-a7e2-9c868cfa07cd" />
+</p>
+
 # Slides das Aulas
 
 Nesta pasta, você encontrará os materiais de apoio utilizados durante os nossos encontros do grupo de estudos de segurança cibernética.
