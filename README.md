@@ -35,6 +35,11 @@ MySQL, Node.js, Express, HTML, JS Básico
 [Slides](https://github.com/luquinhaalho/Cyberbee_cyberseguranca/blob/main/Aula.md)
 
 
+## 📋 Atividades
+
+[Atividades](https://github.com/luquinhaalho/Cyberbee_cyberseguranca/blob/main/Atividades.md)
+
+
 ## 🔗 Links Úteis e Referências
 
 https://roadmap.sh/
