@@ -1,5 +1,5 @@
 <p align="center">
- <img width="500" alt="Image" src="https://github.com/user-attachments/assets/b0a04c83-d844-4341-a7e2-9c868cfa07cd" />
+ <img width="300" alt="Image" src="https://github.com/user-attachments/assets/b0a04c83-d844-4341-a7e2-9c868cfa07cd" />
 </p>
 
 # 📋 Atividades
