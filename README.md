@@ -30,6 +30,11 @@ Sexta - 9:30 às 11:00 - LEC 1
 MySQL, Node.js, Express, HTML, JS Básico
 
 
+## 📽️ Slides das aulas
+
+[Slides](https://github.com/luquinhaalho/Cyberbee_cyberseguranca/blob/main/Aula.md)
+
+
 ## 🔗 Links Úteis e Referências
 
 https://roadmap.sh/
