@@ -33,6 +33,11 @@ Repositório central para o grupo de estudos focado em introdução à seguranç
 <img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> MySQL, Node.js, Express, HTML, JS Básico
 
 
+## 🗺️ Plano de Ensino
+
+<img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> [Plano de esino](https://github.com/luquinhaalho/Cyberbee_cyberseguranca/blob/main/Plano%20de%20ensino.pdf)
+
+
 ## 📽️ Slides das aulas
 
 <img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> [Slides](https://github.com/luquinhaalho/Cyberbee_cyberseguranca/blob/main/Aula.md)
