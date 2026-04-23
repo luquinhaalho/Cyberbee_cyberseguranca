@@ -24,29 +24,29 @@ Repositório central para o grupo de estudos focado em introdução à seguranç
 
 ## 🕑 Horário das Aula
 
-<img width="16" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /> Sexta - 9:30 às 11:00 - LEC 1
+<img width="16" alt="Image" align="middle" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /> Sexta - 9:30 às 11:00 - LEC 1
 
 
 
 ## 🛠️ Ferramentas Utilizadas no Grupo de Estudo
 
-<img width="16" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /> MySQL, Node.js, Express, HTML, JS Básico
+<img width="16" alt="Image" align="middle" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /> MySQL, Node.js, Express, HTML, JS Básico
 
 
 ## 📽️ Slides das aulas
 
-<img width="16" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /> [Slides](https://github.com/luquinhaalho/Cyberbee_cyberseguranca/blob/main/Aula.md)
+<img width="16" alt="Image" align="middle" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /> [Slides](https://github.com/luquinhaalho/Cyberbee_cyberseguranca/blob/main/Aula.md)
 
 
 ## 📋 Atividades
 
-<img width="16" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /> [Atividades](https://github.com/luquinhaalho/Cyberbee_cyberseguranca/blob/main/Atividades.md)
+<img width="16" alt="Image" align="middle" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /> [Atividades](https://github.com/luquinhaalho/Cyberbee_cyberseguranca/blob/main/Atividades.md)
 
 
 ## 🔗 Links Úteis e Referências
 
-<img width="16" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /> https://roadmap.sh/
+<img width="16" alt="Image" align="middle" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /> https://roadmap.sh/
 
-<img width="16" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /> https://www.coursera.org/
+<img width="16" alt="Image" align="middle" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /> https://www.coursera.org/
 
 
