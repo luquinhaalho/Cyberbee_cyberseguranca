@@ -19,6 +19,6 @@ Nesta pasta, você encontrará os materiais de apoio utilizados durante os nosso
 
 | Aula | Título | Link do Material |
 | :--- | :--- | :--- |
-| 01 | Introdução à Cybersegurança | [Visualizar Slides](https://github.com/luquinhaalho/Cyberbee_cyberseguranca/blob/main/Aulas/aula1_introdu%C3%A7%C3%A3o.pdf) |
+| 01 | Introdução à Cybersegurança | [Visualizar Slides](Aulas/aula1_md2_hashSalting.pdf) |
 
 ---
