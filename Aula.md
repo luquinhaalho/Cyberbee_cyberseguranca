@@ -19,6 +19,6 @@ Nesta pasta, você encontrará os materiais de apoio utilizados durante os nosso
 
 | Aula | Título | Link do Material |
 | :--- | :--- | :--- |
-| 01 | Introdução à Cybersegurança | [Visualizar Slides](Aulas/aula1_md2_hashSalting.pdf) |
+| 01 | Hashing e Salting | [Visualizar Slides](Aulas/aula1_md2_hashSalting.pdf) |
 
 ---
