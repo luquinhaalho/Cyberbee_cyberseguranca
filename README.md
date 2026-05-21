@@ -47,6 +47,9 @@ Repositório central para o grupo de estudos focado em introdução à seguranç
 
 <img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> [Atividades](https://github.com/luquinhaalho/Cyberbee_cyberseguranca/blob/main/Atividades.md)
 
+## 💻 Prática
+
+<img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> [Material](https://github.com/luquinhaalho/Cyberbee_cyberseguranca/edit/main/Pr%C3%A1ticas.md)
 
 ## 🔗 Links Úteis e Referências
 
