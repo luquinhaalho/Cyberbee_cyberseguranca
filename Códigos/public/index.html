@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciador de Notas Pessoais - Tutor</title>
+</head>
+<body>
+    <h1>Cadastro de Usuário</h1>
+    <input type="text" id="newUser" placeholder="Novo Usuário">
+    <input type="password" id="newPass" placeholder="Nova Senha">
+    <button onclick="registrarUsuario()">Cadastrar</button>
+    
+    <div id="cadastroResultado" style="margin-top: 10px; min-height: 20px;">
+        Aguardando cadastro...
+    </div>
+
+    <hr>
+
+    <h1>Login do Sistema</h1>
+    <input type="text" id="user" placeholder="Usuário">
+    <input type="password" id="pass" placeholder="Senha">
+    <button onclick="fazerLogin()">Entrar</button>
+    
+    <div id="loginResultado" style="margin-top: 10px; min-height: 20px;">
+        Aguardando login...
+    </div>
+
+    <hr>
+
+    <h2>Visualizar Nota (ID)</h2>
+    <input type="number" id="noteId" placeholder="ID da Nota">
+    <button onclick="buscarNota()">Buscar</button>
+    
+    <div id="resultado" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; min-height: 50px;">
+        Aguardando busca...
+    </div>
+
+    <script>
+        // Função para cadastrar novo usuário
+        async function registrarUsuario() {
+            const usuario = document.getElementById('newUser').value;
+            const senha = document.getElementById('newPass').value;
+            const cadastroResultado = document.getElementById('cadastroResultado');
+
+            cadastroResultado.innerHTML = "Cadastrando...";
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ usuario, senha })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    cadastroResultado.innerHTML = `<p style="color: green; font-weight: bold;">✅ ${data.message}</p>`;
+                } else {
+                    cadastroResultado.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ ${data.message}</p>`;
+                }
+            } catch (error) {
+                cadastroResultado.innerHTML = `<p style="color: red;">❌ Erro ao conectar com o servidor.</p>`;
+            }
+        }
+
+        // Função de login
+        async function fazerLogin() {
+            const usuario = document.getElementById('user').value;
+            const senha = document.getElementById('pass').value;
+            const loginResultado = document.getElementById('loginResultado');
+
+            loginResultado.innerHTML = "Autenticando...";
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ usuario, senha })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Exibe o usuário real retornado pelo banco (útil para demonstrar injeção)
+                    loginResultado.innerHTML = `<p style="color: green;">✅ Logado como: <strong>${data.usuarioNoBanco}</strong></p>`;
+                } else {
+                    loginResultado.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ ${data.message}</p>`;
+                }
+            } catch (error) {
+                loginResultado.innerHTML = `<p style="color: red;">❌ Erro ao conectar com o servidor.</p>`;
+            }
+        }
+
+        // Função para buscar notas
+        async function buscarNota() {
+            const id = document.getElementById('noteId').value;
+            const resultadoDiv = document.getElementById('resultado');
+            
+            resultadoDiv.innerHTML = "Buscando...";
+
+            try {
+                const response = await fetch(`/api/notes/${id}`);
+                
+                if (!response.ok) {
+                    const erro = await response.json();
+                    resultadoDiv.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ ${erro.message}</p>`;
+                    return;
+                }
+
+                const nota = await response.json();
+
+                resultadoDiv.innerHTML = `
+                    <div style="background-color: #f9f9f9; padding: 10px;">
+                        <h3 style="margin-top: 0;">${nota.titulo}</h3>
+                        <p>${nota.conteudo}</p>
+                    </div>
+                `;
+
+            } catch (error) {
+                resultadoDiv.innerHTML = `<p style="color: red;">❌ Não foi possível conectar ao servidor.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
