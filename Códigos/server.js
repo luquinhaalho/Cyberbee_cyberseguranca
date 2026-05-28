@@ -13,9 +13,9 @@ app.post('/register', async (req, res) => {
   const { usuario, senha } = req.body;
   
   try {
-
+    const saltRounds = 10;
+    const hashSenha = await bcrypt.hash(senha, saltRounds);
     
-
     console.log("--- NOVO CADASTRO ---");
     console.log("Usuário digitou a senha:", senha);
     console.log("O Node transformou no Hash:", hashSenha);
@@ -59,7 +59,8 @@ app.post('/login', (req, res) => {
       console.log(`3. Usuário encontrado! -> ID no banco: ${usuarioBanco.id}`);
       console.log(`4. Hash guardado no banco -> ${usuarioBanco.senha}`);
 
-    
+      const senhaValida = await bcrypt.compare(senha, usuarioBanco.senha);
+
       console.log(`5. Bcrypt validou a senha? -> ${senhaValida ? 'SIM ✅' : 'NÃO ❌'}`);
 
       if (senhaValida) {
