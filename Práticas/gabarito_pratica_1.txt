@@ -1,0 +1,14 @@
+//abaixo de try{ em register
+const saltRounds = 10;
+    // Transforma a senha em um Hash irreversível
+    const hashSenha = await bcrypt.hash(senha, saltRounds);
+
+//Fator de Custo (Cost Factor). Isso diz ao algoritmo que ele deve iterar o cálculo $2^{10}$ (1.024) vezes. 
+// É isso que torna o Bcrypt propositalmente "lento" e resistente a ataques de força bruta.
+
+//bcrypt.hash() junta o algoritmo usado, o custo, o salt gerado e o hash final em uma única "sopa de letrinhas" que é salva no banco.
+
+//parte do login
+// Mágica do Bcrypt: Compara o texto digitado com o Hash do banco
+      const senhaValida = await bcrypt.compare(senha, usuarioBanco.senha);
+//fica acima de  console.log(5. Bcrypt validou a senha? -> ${senhaValida ? 'SIM ✅' : 'NÃO ❌'});
