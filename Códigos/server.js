@@ -3,6 +3,10 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const db = require('./db');
 const bcrypt = require('bcrypt'); //biblioteca bcrypt
+const jwt = require('jsonwebtoken');
+
+// em sistemas reais isso fica em .env invisivel
+const JWT_SECRET = 'MinhaChaveSuperSecretaEComplicada123!';
 
 const app = express();
 app.use(bodyParser.json());
@@ -14,8 +18,9 @@ app.post('/register', async (req, res) => {
   
   try {
     const saltRounds = 10;
+    // Transforma a senha em um Hash irreversível
     const hashSenha = await bcrypt.hash(senha, saltRounds);
-    
+
     console.log("--- NOVO CADASTRO ---");
     console.log("Usuário digitou a senha:", senha);
     console.log("O Node transformou no Hash:", hashSenha);
@@ -60,15 +65,27 @@ app.post('/login', (req, res) => {
       console.log(`4. Hash guardado no banco -> ${usuarioBanco.senha}`);
 
       const senhaValida = await bcrypt.compare(senha, usuarioBanco.senha);
-
       console.log(`5. Bcrypt validou a senha? -> ${senhaValida ? 'SIM ✅' : 'NÃO ❌'}`);
 
       if (senhaValida) {
-        console.log("🔐 STATUS: Acesso Liberado.");
-        res.json({ message: "Acesso concedido!", usuarioNoBanco: usuarioBanco.usuario });
-      } else {
-        console.log("🔒 STATUS: Acesso Negado (Senha não bate com o Hash).");
-        res.status(401).json({ message: "Usuário ou senha inválidos" });
+        console.log("🔐 STATUS: Acesso Liberado. Gerando JWT...");
+        
+        // Aplicação da RFC 8725: Payload mínimo + Expiração + Algoritmo Fixo
+        const token = jwt.sign(
+          { id: usuarioBanco.id, usuario: usuarioBanco.usuario }, // Payload (Carga Útil)
+          JWT_SECRET, // A chave que assina
+          { 
+            expiresIn: '60s', // Expira em 1 hora (Regra de Ouro)
+            algorithm: 'HS256' // Trava o algoritmo para evitar falhas de rebaixamento
+          }
+        );
+
+        // Agora enviamos o token de volta para o navegador
+        res.json({ 
+            message: "Acesso concedido!", 
+            usuarioNoBanco: usuarioBanco.usuario,
+            token: token 
+        });
       }
     } else {
       console.log("🔒 STATUS: Acesso Negado (Usuário não existe no banco).");
@@ -78,8 +95,32 @@ app.post('/login', (req, res) => {
   });
 });
 
+// Middleware de Autenticação JWT
+function autenticarToken(req, res, next) {
+  // O token geralmente vem no cabeçalho HTTP: "Authorization: Bearer <token>"
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "Acesso Negado: Token não fornecido." });
+  }
+
+  // Verifica se o token é válido e se foi assinado com o nosso segredo
+  jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'], clockTolerance: 0 }, (err, usuarioDecodificado) => {
+    if (err) {
+      // Se expirou ou foi fraudado, cai aqui
+      return res.status(403).json({ message: "Acesso Negado: Token inválido ou expirado." });
+    }
+    
+    // Se deu tudo certo, guarda os dados do usuário na requisição e permite passar
+    req.usuarioLogado = usuarioDecodificado;
+    next(); // "Pode abrir a porta e executar a rota solicitada"
+  });
+}
+
 // rota de notas
-app.get('/api/notes/:id', (req, res) => {
+app.get('/api/notes/:id', autenticarToken, (req, res) => {
+  console.log(`Usuário [${req.usuarioLogado.usuario}] está tentando ler a nota ${req.params.id}`);
   // uso de concatenação
   const sql = `SELECT * FROM notas WHERE id = ${req.params.id}`;
   

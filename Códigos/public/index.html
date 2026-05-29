@@ -36,7 +36,12 @@
     </div>
 
     <script>
-        // Função para cadastrar novo usuário
+        // ==========================================
+        // NOVO: Variável global para guardar o JWT na memória do navegador
+        // ==========================================
+        let tokenUsuario = "";
+
+        // Função para cadastrar novo usuário (Mantida igual)
         async function registrarUsuario() {
             const usuario = document.getElementById('newUser').value;
             const senha = document.getElementById('newPass').value;
@@ -63,7 +68,9 @@
             }
         }
 
-        // Função de login
+        // ==========================================
+        // ATUALIZADA: Função de login que agora salva o token
+        // ==========================================
         async function fazerLogin() {
             const usuario = document.getElementById('user').value;
             const senha = document.getElementById('pass').value;
@@ -81,7 +88,9 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Exibe o usuário real retornado pelo banco (útil para demonstrar injeção)
+                    // SALVANDO O TOKEN: Guarda o JWT recebido do servidor na variável global
+                    tokenUsuario = data.token; 
+                    
                     loginResultado.innerHTML = `<p style="color: green;">✅ Logado como: <strong>${data.usuarioNoBanco}</strong></p>`;
                 } else {
                     loginResultado.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ ${data.message}</p>`;
@@ -91,7 +100,9 @@
             }
         }
 
-        // Função para buscar notas
+        // ==========================================
+        // ATUALIZADA: Função que agora envia o token no cabeçalho (Header)
+        // ==========================================
         async function buscarNota() {
             const id = document.getElementById('noteId').value;
             const resultadoDiv = document.getElementById('resultado');
@@ -99,7 +110,13 @@
             resultadoDiv.innerHTML = "Buscando...";
 
             try {
-                const response = await fetch(`/api/notes/${id}`);
+                // ENVIANDO O TOKEN: Passamos o método GET e incluímos o Header Authorization
+                const response = await fetch(`/api/notes/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${tokenUsuario}` // Padrão "Bearer [Token]" requisitado pelo Middleware
+                    }
+                });
                 
                 if (!response.ok) {
                     const erro = await response.json();
