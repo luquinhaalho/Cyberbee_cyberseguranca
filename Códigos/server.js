@@ -75,7 +75,7 @@ app.post('/login', (req, res) => {
           { id: usuarioBanco.id, usuario: usuarioBanco.usuario }, // Payload (Carga Útil)
           JWT_SECRET, // A chave que assina
           { 
-            expiresIn: '60s', // Expira em 1 hora (Regra de Ouro)
+            expiresIn: '1h', // Expira em 1 hora (Regra de Ouro)
             algorithm: 'HS256' // Trava o algoritmo para evitar falhas de rebaixamento
           }
         );
