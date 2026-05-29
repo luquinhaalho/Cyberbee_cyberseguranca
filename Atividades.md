@@ -19,3 +19,7 @@
 <img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> [Teste Autoavaliativo](https://forms.gle/qPxzbycZt3sv8mgY8)
 
 <img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> [Atividade 1](https://forms.gle/BXeiPZAgrQJUXaVH7)
+
+<img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> [Attividade hash revisão](https://forms.gle/gL5Cdsu8akTHNUd19)
+
+<img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> [Atividade 2](https://forms.gle/6YGgeRHBNjT9Z1SV6)
