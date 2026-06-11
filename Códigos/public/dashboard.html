@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Minhas Notas - Dashboard</title>
+</head>
+<body>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1 id="boasVindas">Área Segura</h1>
+        <button onclick="fazerLogout()" style="background-color: #ff4c4c; color: white;">Sair (Logout)</button>
+    </div>
+    
+    <hr>
+
+    <h2>Visualizar Nota (ID)</h2>
+    <input type="number" id="noteId" placeholder="ID da Nota">
+    <button onclick="buscarNota()">Buscar</button>
+    
+    <div id="resultado" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; min-height: 50px;">
+        Aguardando busca...
+    </div>
+
+    <script>
+        // ==========================================
+        // GUARDIÃO DA PÁGINA (Executado ao carregar)
+        // ==========================================
+        const token = localStorage.getItem('tokenUsuario');
+        const nome = localStorage.getItem('nomeUsuario');
+
+        // se não houver token, expulsa para o login imediatamente
+        if (!token) {
+            alert("⚠️ Acesso restrito. Faça login primeiro.");
+            window.location.href = '/';
+        } else {
+            document.getElementById('boasVindas').innerText = `Bem-vindo(a), ${nome}!`;
+        }
+
+        // ==========================================
+        // FUNÇÕES DA PÁGINA
+        // ==========================================
+        async function buscarNota() {
+            const id = document.getElementById('noteId').value;
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = "Buscando...";
+
+            try {
+                const response = await fetch(`/api/notes/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}` 
+                    }
+                });
+                
+                // se servidor retornar 403 (Token Expirado/Inválido) ou 401
+                if (response.status === 403 || response.status === 401) {
+                    alert("⏰ Sua sessão expirou por inatividade! Por favor, faça login novamente.");
+                    fazerLogout(); // Limpa o token vencido e redireciona
+                    return;
+                }
+
+                // se a nota não existir (404)
+                if (!response.ok) {
+                    const erro = await response.json();
+                    resultadoDiv.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ ${erro.message}</p>`;
+                    return;
+                }
+
+                const nota = await response.json();
+                resultadoDiv.innerHTML = `
+                    <div style="background-color: #e6f7ff; padding: 10px; border-radius: 5px;">
+                        <h3 style="margin-top: 0;">${nota.titulo}</h3>
+                        <p>${nota.conteudo}</p>
+                    </div>
+                `;
+
+            } catch (error) {
+                resultadoDiv.innerHTML = `<p style="color: red;">❌ Erro de conexão.</p>`;
+            }
+        }
+
+        // função de Logout manual ou forçado
+        function fazerLogout() {
+            localStorage.removeItem('tokenUsuario');
+            localStorage.removeItem('nomeUsuario');
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>
