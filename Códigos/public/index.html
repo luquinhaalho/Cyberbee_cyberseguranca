@@ -61,11 +61,9 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    // token e o nome no "cofre" do navegador
-                    localStorage.setItem('tokenUsuario', data.token);
+                    // salvar o nome é apenas visual 
+                    // token salvo no cofre invisível do navegador pelo backend
                     localStorage.setItem('nomeUsuario', data.usuarioNoBanco);
-                    
-                    // redireciona o usuário para a área protegida
                     window.location.href = '/dashboard.html';
                 } else {
                     loginResultado.innerHTML = `<p style="color: red;">⚠️ ${data.message}</p>`;

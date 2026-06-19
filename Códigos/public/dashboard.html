@@ -24,41 +24,34 @@
         // ==========================================
         // GUARDIÃO DA PÁGINA (Executado ao carregar)
         // ==========================================
-        const token = localStorage.getItem('tokenUsuario');
         const nome = localStorage.getItem('nomeUsuario');
 
-        // se não houver token, expulsa para o login imediatamente
-        if (!token) {
+        // Se não tem o nome salvo, não deixa entrar (Guardião visual)
+        if (!nome) {
             alert("⚠️ Acesso restrito. Faça login primeiro.");
             window.location.href = '/';
         } else {
             document.getElementById('boasVindas').innerText = `Bem-vindo(a), ${nome}!`;
         }
 
-        // ==========================================
-        // FUNÇÕES DA PÁGINA
-        // ==========================================
         async function buscarNota() {
             const id = document.getElementById('noteId').value;
             const resultadoDiv = document.getElementById('resultado');
             resultadoDiv.innerHTML = "Buscando...";
 
             try {
+                // A MÁGICA: Não precisamos passar o cabeçalho 'Authorization'.
+                // O navegador anexa o Cookie HttpOnly sozinho em cada requisição!
                 const response = await fetch(`/api/notes/${id}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}` 
-                    }
+                    method: 'GET'
                 });
                 
-                // se servidor retornar 403 (Token Expirado/Inválido) ou 401
                 if (response.status === 403 || response.status === 401) {
-                    alert("⏰ Sua sessão expirou por inatividade! Por favor, faça login novamente.");
-                    fazerLogout(); // Limpa o token vencido e redireciona
+                    alert("⏰ Sessão expirada ou inválida! Por favor, faça login novamente.");
+                    fazerLogout(); 
                     return;
                 }
 
-                // se a nota não existir (404)
                 if (!response.ok) {
                     const erro = await response.json();
                     resultadoDiv.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ ${erro.message}</p>`;
@@ -72,16 +65,15 @@
                         <p>${nota.conteudo}</p>
                     </div>
                 `;
-
             } catch (error) {
                 resultadoDiv.innerHTML = `<p style="color: red;">❌ Erro de conexão.</p>`;
             }
         }
 
-        // função de Logout manual ou forçado
-        function fazerLogout() {
-            localStorage.removeItem('tokenUsuario');
-            localStorage.removeItem('nomeUsuario');
+        // Função de Logout atualizada (Pede ao servidor para destruir o cookie)
+        async function fazerLogout() {
+            await fetch('/logout', { method: 'POST' }); // Chamada silenciosa ao backend
+            localStorage.removeItem('nomeUsuario'); // Limpa a estética do front
             window.location.href = '/';
         }
     </script>

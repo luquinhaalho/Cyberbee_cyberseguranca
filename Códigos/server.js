@@ -4,12 +4,14 @@ const path = require('path');
 const db = require('./db');
 const bcrypt = require('bcrypt'); //biblioteca bcrypt
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 // em sistemas reais isso fica em .env invisivel
 const JWT_SECRET = 'MinhaChaveSuperSecretaEComplicada123!';
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(express.static('public')); 
 
 // Rota de Cadastro - SEGURA (Com Hashing usndo Byrypt e Salting)
@@ -80,11 +82,17 @@ app.post('/login', (req, res) => {
           }
         );
 
+        // CONFIGURAÇÃO DO COOKIE HTTP-ONLY
+        res.cookie('token', token, {
+          httpOnly: true, // Impede acesso via JavaScript (Proteção contra XSS)
+          secure: false, // Em produção com HTTPS, mude para true
+          sameSite: 'Strict', // Proteção contra envio forçado de formulários falsos (CSRF)
+          maxAge: 3600000 // Tempo de vida do cookie (1 hora em milissegundos)
+          });
         // Agora enviamos o token de volta para o navegador
         res.json({ 
             message: "Acesso concedido!", 
             usuarioNoBanco: usuarioBanco.usuario,
-            token: token 
         });
       }
     } else {
@@ -97,9 +105,8 @@ app.post('/login', (req, res) => {
 
 // Middleware de Autenticação JWT
 function autenticarToken(req, res, next) {
-  // O token geralmente vem no cabeçalho HTTP: "Authorization: Bearer <token>"
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  // Pega o token automaticamente de dentro do cookie
+  const token = req.cookies.token;
 
   if (!token) {
     return res.status(401).json({ message: "Acesso Negado: Token não fornecido." });
