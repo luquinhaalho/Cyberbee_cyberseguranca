@@ -29,3 +29,8 @@
 <img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> [Attividade JWT e Tokens Revisão](https://forms.gle/WET5uHj76pJLprNZ7)
 
 <img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> [Atividade 4](https://forms.gle/M5szowJKRVV8AdMs5)
+
+## <img width="30" alt="Image" src="https://github.com/user-attachments/assets/c8784481-08d0-4259-8427-1af21f2755ff" /></sub> Módulo 3
+
+<img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> [Atividade 1](https://docs.google.com/forms/d/e/1FAIpQLSeW3PX69RsgSb2KAglqASNezKAdKoZJoI7RwaFXvOXQe3WejQ/viewform)
+
