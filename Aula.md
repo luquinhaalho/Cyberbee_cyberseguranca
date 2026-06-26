@@ -21,5 +21,6 @@ Nesta pasta, você encontrará os materiais de apoio utilizados durante os nosso
 | :--- | :--- | :--- |
 | 01 | Hashing e Salting | [Visualizar Slides](Aulas/aula1_md2_hashSalting.pdf) |
 | 02 | Implementação de JWT | [Visualizar Slides](/Aulas/aula2_md2.pdf) |
+| 04 | Cookies | [Visualizar Slides](/Aulas/aula4_md2_Cookies.pdf) |
 
 ---
