@@ -23,4 +23,12 @@ Nesta pasta, você encontrará os materiais de apoio utilizados durante os nosso
 | 02 | Implementação de JWT | [Visualizar Slides](/Aulas/aula2_md2.pdf) |
 | 04 | Cookies | [Visualizar Slides](/Aulas/aula4_md2_Cookies.pdf) |
 
+
+## Módulo 3
+
+| Aula | Título | Link do Material |
+| :--- | :--- | :--- |
+| 01 | Arquitetura Zero-Knowledge | [Visualizar Slides](Aulas/aula1_md3_cyberbee.pdf) |
+
+
 ---
