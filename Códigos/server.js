@@ -4,14 +4,14 @@ const path = require('path');
 const db = require('./db');
 const bcrypt = require('bcrypt'); //biblioteca bcrypt
 const jwt = require('jsonwebtoken');
-const cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser'); // cookies 
 
 // em sistemas reais isso fica em .env invisivel
 const JWT_SECRET = 'MinhaChaveSuperSecretaEComplicada123!';
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cookieParser());
+app.use(cookieParser()); // inicialização cookies
 app.use(express.static('public')); 
 
 // Rota de Cadastro - SEGURA (Com Hashing usndo Byrypt e Salting)
@@ -72,27 +72,24 @@ app.post('/login', (req, res) => {
       if (senhaValida) {
         console.log("🔐 STATUS: Acesso Liberado. Gerando JWT...");
         
-        // Aplicação da RFC 8725: Payload mínimo + Expiração + Algoritmo Fixo
         const token = jwt.sign(
-          { id: usuarioBanco.id, usuario: usuarioBanco.usuario }, // Payload (Carga Útil)
-          JWT_SECRET, // A chave que assina
-          { 
-            expiresIn: '1h', // Expira em 1 hora (Regra de Ouro)
-            algorithm: 'HS256' // Trava o algoritmo para evitar falhas de rebaixamento
-          }
+          { id: usuarioBanco.id, usuario: usuarioBanco.usuario }, 
+          JWT_SECRET, 
+          { expiresIn: '1h', algorithm: 'HS256' }
         );
 
         // CONFIGURAÇÃO DO COOKIE HTTP-ONLY
         res.cookie('token', token, {
-          httpOnly: true, // Impede acesso via JavaScript (Proteção contra XSS)
-          secure: false, // Em produção com HTTPS, mude para true
-          sameSite: 'Strict', // Proteção contra envio forçado de formulários falsos (CSRF)
-          maxAge: 3600000 // Tempo de vida do cookie (1 hora em milissegundos)
-          });
-        // Agora enviamos o token de volta para o navegador
+            httpOnly: true, // Impede acesso via JavaScript (Proteção contra XSS)
+            secure: false,  // Em produção com HTTPS, mude para true
+            sameSite: 'Strict', // Proteção contra envio forçado de formulários falsos (CSRF)
+            maxAge: 3600000 // Tempo de vida do cookie (1 hora em milissegundos)
+        });
+
+        // token NÃO vai mais no JSON!
         res.json({ 
             message: "Acesso concedido!", 
-            usuarioNoBanco: usuarioBanco.usuario,
+            usuarioNoBanco: usuarioBanco.usuario 
         });
       }
     } else {
@@ -103,27 +100,48 @@ app.post('/login', (req, res) => {
   });
 });
 
-// Middleware de Autenticação JWT
+// Rota para apagar o Cookie no Logout
+app.post('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.json({ message: "Logout efetuado com sucesso" });
+});
+
+
+// Middleware de Autenticação JWT com o cookie
 function autenticarToken(req, res, next) {
   // Pega o token automaticamente de dentro do cookie
-  const token = req.cookies.token;
+  const token = req.cookies.token; 
 
   if (!token) {
     return res.status(401).json({ message: "Acesso Negado: Token não fornecido." });
   }
 
-  // Verifica se o token é válido e se foi assinado com o nosso segredo
   jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'], clockTolerance: 0 }, (err, usuarioDecodificado) => {
     if (err) {
-      // Se expirou ou foi fraudado, cai aqui
       return res.status(403).json({ message: "Acesso Negado: Token inválido ou expirado." });
     }
     
-    // Se deu tudo certo, guarda os dados do usuário na requisição e permite passar
     req.usuarioLogado = usuarioDecodificado;
-    next(); // "Pode abrir a porta e executar a rota solicitada"
+    next(); 
   });
 }
+
+// Rota para CRIAR nota (O servidor é cego ao conteúdo)
+app.post('/api/notes', autenticarToken, (req, res) => {
+    const { titulo, conteudo } = req.body;
+    
+    // O servidor simplesmente pega o que veio e joga no banco.
+    // Ele não faz ideia de que o 'conteudo' está criptografado.
+    console.log(`[Zero-Knowledge] Salvando dados cegos: ${conteudo.substring(0, 20)}...`);
+
+    const sql = `INSERT INTO notas (usuario_id, titulo, conteudo) VALUES (${req.usuarioLogado.id}, '${titulo}', '${conteudo}')`;
+    
+    db.query(sql, (err) => {
+        if (err) return res.status(500).json({ message: "Erro ao salvar nota." });
+        res.json({ message: "Nota salva no servidor hostil com sucesso!" });
+    });
+});
+
 
 // rota de notas
 app.get('/api/notes/:id', autenticarToken, (req, res) => {

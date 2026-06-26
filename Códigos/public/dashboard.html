@@ -6,27 +6,40 @@
 </head>
 <body>
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h1 id="boasVindas">Área Segura</h1>
+        <h1 id="boasVindas">Área Segura (Zero-Knowledge)</h1>
         <button onclick="fazerLogout()" style="background-color: #ff4c4c; color: white;">Sair (Logout)</button>
     </div>
-    
     <hr>
 
-    <h2>Visualizar Nota (ID)</h2>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+    <div style="background-color: #fff3cd; padding: 10px; border: 1px solid #ffeeba;">
+        <label><strong>🔑 Chave do Cofre (Sua chave secreta local):</strong></label>
+        <input type="password" id="chaveCofre" placeholder="Ex: segredo123">
+        <p style="font-size: 12px; color: #856404; margin: 5px 0 0 0;">Esta chave NUNCA será enviada ao servidor.</p>
+    </div>
+
+    <hr>
+
+    <h2>1. Criar Nova Nota Confidencial</h2>
+    <input type="text" id="novoTitulo" placeholder="Título da Nota"><br><br>
+    <textarea id="novoConteudo" placeholder="Escreva seu segredo aqui..." rows="4" cols="40"></textarea><br><br>
+    <button onclick="salvarNota()">Salvar na Nuvem</button>
+    <div id="statusSalvar" style="margin-top: 10px; font-weight: bold;"></div>
+
+    <hr>
+
+    <h2>2. Visualizar Nota (ID)</h2>
     <input type="number" id="noteId" placeholder="ID da Nota">
-    <button onclick="buscarNota()">Buscar</button>
+    <button onclick="buscarNota()">Buscar e Descriptografar</button>
     
     <div id="resultado" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; min-height: 50px;">
         Aguardando busca...
     </div>
 
     <script>
-        // ==========================================
-        // GUARDIÃO DA PÁGINA (Executado ao carregar)
-        // ==========================================
         const nome = localStorage.getItem('nomeUsuario');
 
-        // Se não tem o nome salvo, não deixa entrar (Guardião visual)
         if (!nome) {
             alert("⚠️ Acesso restrito. Faça login primeiro.");
             window.location.href = '/';
@@ -34,46 +47,90 @@
             document.getElementById('boasVindas').innerText = `Bem-vindo(a), ${nome}!`;
         }
 
-        async function buscarNota() {
-            const id = document.getElementById('noteId').value;
-            const resultadoDiv = document.getElementById('resultado');
-            resultadoDiv.innerHTML = "Buscando...";
+        // ==========================================
+        // CRIAR NOTA (ZERO-KNOWLEDGE EM AÇÃO)
+        // ==========================================
+        async function salvarNota() {
+            const titulo = document.getElementById('novoTitulo').value;
+            const conteudoPuro = document.getElementById('novoConteudo').value;
+            const chave = document.getElementById('chaveCofre').value;
+            const status = document.getElementById('statusSalvar');
+
+            if (!chave) {
+                alert("Você precisa definir a Chave do Cofre para criptografar!");
+                return;
+            }
+
+            // MÁGICA 1: Criptografando com AES no navegador
+            const conteudoCriptografado = CryptoJS.AES.encrypt(conteudoPuro, chave).toString();
 
             try {
-                // A MÁGICA: Não precisamos passar o cabeçalho 'Authorization'.
-                // O navegador anexa o Cookie HttpOnly sozinho em cada requisição!
-                const response = await fetch(`/api/notes/${id}`, {
-                    method: 'GET'
+                // Enviamos o LIXO DIGITAL para o servidor
+                const response = await fetch('/api/notes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ titulo: titulo, conteudo: conteudoCriptografado })
                 });
-                
-                if (response.status === 403 || response.status === 401) {
-                    alert("⏰ Sessão expirada ou inválida! Por favor, faça login novamente.");
-                    fazerLogout(); 
-                    return;
-                }
 
-                if (!response.ok) {
-                    const erro = await response.json();
-                    resultadoDiv.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ ${erro.message}</p>`;
-                    return;
+                if (response.ok) {
+                    status.innerHTML = `<span style="color: green;">✅ Salvo! Veja o banco de dados. O servidor só recebeu: ${conteudoCriptografado.substring(0, 15)}...</span>`;
                 }
-
-                const nota = await response.json();
-                resultadoDiv.innerHTML = `
-                    <div style="background-color: #e6f7ff; padding: 10px; border-radius: 5px;">
-                        <h3 style="margin-top: 0;">${nota.titulo}</h3>
-                        <p>${nota.conteudo}</p>
-                    </div>
-                `;
             } catch (error) {
-                resultadoDiv.innerHTML = `<p style="color: red;">❌ Erro de conexão.</p>`;
+                status.innerHTML = "❌ Erro ao salvar.";
             }
         }
 
-        // Função de Logout atualizada (Pede ao servidor para destruir o cookie)
+        // ==========================================
+        // BUSCAR NOTA (DESCRIPTOGRAFANDO LOCALMENTE)
+        // ==========================================
+        async function buscarNota() {
+            const id = document.getElementById('noteId').value;
+            const chave = document.getElementById('chaveCofre').value;
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = "Buscando pacote no servidor...";
+
+            if (!chave) {
+                alert("Você precisa da Chave do Cofre para abrir a nota!");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/notes/${id}`);
+                
+                if (response.status === 403 || response.status === 401) {
+                    alert("⏰ Sessão expirada! Faça login novamente.");
+                    fazerLogout(); return;
+                }
+                if (!response.ok) return resultadoDiv.innerHTML = "⚠️ Nota não encontrada.";
+
+                const notaCriptografadaDoBanco = await response.json();
+
+                try {
+                    // MÁGICA 2: Pegamos o pacote do banco e tentamos abrir com a chave
+                    const bytes = CryptoJS.AES.decrypt(notaCriptografadaDoBanco.conteudo, chave);
+                    const conteudoDescriptografado = bytes.toString(CryptoJS.enc.Utf8);
+
+                    if (!conteudoDescriptografado) throw new Error("Chave Incorreta");
+
+                    resultadoDiv.innerHTML = `
+                        <div style="background-color: #e6f7ff; padding: 10px; border-radius: 5px;">
+                            <h3>${notaCriptografadaDoBanco.titulo}</h3>
+                            <p>${conteudoDescriptografado}</p>
+                        </div>
+                    `;
+                } catch (e) {
+                    // Se a chave estiver errada, o AES falha e cai aqui
+                    resultadoDiv.innerHTML = `<p style="color: red; font-weight: bold;">❌ A Nota foi encontrada, mas a Chave do Cofre está incorreta. Lixo digital lido: ${notaCriptografadaDoBanco.conteudo}</p>`;
+                }
+
+            } catch (error) {
+                resultadoDiv.innerHTML = "❌ Erro de conexão.";
+            }
+        }
+
         async function fazerLogout() {
-            await fetch('/logout', { method: 'POST' }); // Chamada silenciosa ao backend
-            localStorage.removeItem('nomeUsuario'); // Limpa a estética do front
+            await fetch('/logout', { method: 'POST' });
+            localStorage.removeItem('nomeUsuario');
             window.location.href = '/';
         }
     </script>
