@@ -29,6 +29,7 @@ Nesta pasta, você encontrará os materiais de apoio utilizados durante os nosso
 | Aula | Título | Link do Material |
 | :--- | :--- | :--- |
 | 01 | Arquitetura Zero-Knowledge | [Visualizar Slides](Aulas/aula1_md3_cyberbee.pdf) |
+| 02 | Criptografia AES-256-GCM | [Visualizar Slides](Aulas/aula2_md3_criptografia.pdf) |
 
 
 ---
