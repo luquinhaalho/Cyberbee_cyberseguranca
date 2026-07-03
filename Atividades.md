@@ -34,3 +34,5 @@
 
 <img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> [Atividade 1](https://docs.google.com/forms/d/e/1FAIpQLSeW3PX69RsgSb2KAglqASNezKAdKoZJoI7RwaFXvOXQe3WejQ/viewform)
 
+<img width="20" alt="Image" src="https://github.com/user-attachments/assets/8f2c1d0c-7394-4397-bbc7-071e8b2ab015" /></sub> [Atividade 2](https://forms.gle/4FrDkmno8t6EDwxJ8)
+
