@@ -1,3 +1,4 @@
+// server.js
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -5,14 +6,51 @@ const db = require('./db');
 const bcrypt = require('bcrypt'); //biblioteca bcrypt
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser'); // cookies 
+const crypto = require('crypto'); // MÓDULO NATIVO DE CRIPTOGRAFIA DO NODE
 
 // em sistemas reais isso fica em .env invisivel
 const JWT_SECRET = 'MinhaChaveSuperSecretaEComplicada123!';
+
+// REGRA DO AES-256: A chave precisa ter exatamente 32 caracteres (32 bytes)
+const CHAVE_MASTER_AES = Buffer.from('diretoria_segura_com_32_bytes_99', 'utf8');
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser()); // inicialização cookies
 app.use(express.static('public')); 
+
+// Funções auxiliares para a Criptografia Autenticada AES-256-GCM
+function criptografarNota(textoPuro) {
+    const iv = crypto.randomBytes(12); // GCM exige IV de 12 bytes aleatórios
+    const cipher = crypto.createCipheriv('aes-256-gcm', CHAVE_MASTER_AES, iv);
+    
+    let criptografado = cipher.update(textoPuro, 'utf8', 'hex');
+    criptografado += cipher.final('hex');
+    
+    const authTag = cipher.getAuthTag().toString('hex'); // Gerando o Lacre de Segurança (Tag)
+
+    // Unificamos a estrutura para salvar na coluna TEXT do MySQL (iv:tag:ciphertext)
+    return `${iv.toString('hex')}:${authTag}:${criptografado}`;
+}
+
+function descriptografarNota(dadosDoBanco) {
+    const [ivHex, tagHex, criptografadoHex] = dadosDoBanco.split(':');
+    
+    if (!ivHex || !tagHex || !criptografadoHex) {
+        throw new Error("Formato de dados corrompido ou inválido.");
+    }
+
+    const iv = Buffer.from(ivHex, 'hex');
+    const tag = Buffer.from(tagHex, 'hex');
+    
+    const decipher = crypto.createDecipheriv('aes-256-gcm', CHAVE_MASTER_AES, iv);
+    decipher.setAuthTag(tag); // Aplica o lacre para validação automática de integridade
+    
+    let textoClaro = decipher.update(criptografadoHex, 'hex', 'utf8');
+    textoClaro += decipher.final('utf8'); // Se a Tag foi adulterada, estoura o erro aqui
+    
+    return textoClaro;
+}
 
 // Rota de Cadastro - SEGURA (Com Hashing usndo Byrypt e Salting)
 app.post('/register', async (req, res) => {
@@ -106,7 +144,6 @@ app.post('/logout', (req, res) => {
     res.json({ message: "Logout efetuado com sucesso" });
 });
 
-
 // Middleware de Autenticação JWT com o cookie
 function autenticarToken(req, res, next) {
   // Pega o token automaticamente de dentro do cookie
@@ -126,22 +163,21 @@ function autenticarToken(req, res, next) {
   });
 }
 
-// Rota para CRIAR nota (O servidor é cego ao conteúdo)
+// Rota para CRIAR nota (Protegida com AES-256-GCM no Servidor)
 app.post('/api/notes', autenticarToken, (req, res) => {
     const { titulo, conteudo } = req.body;
     
-    // O servidor simplesmente pega o que veio e joga no banco.
-    // Ele não faz ideia de que o 'conteudo' está criptografado.
-    console.log(`[Zero-Knowledge] Salvando dados cegos: ${conteudo.substring(0, 20)}...`);
+    // BACKEND EXECUTA A CRIPTOGRAFIA ANTES DE SALVAR NO BANCO
+    const conteudoSeguro = criptografarNota(conteudo);
+    console.log(`[AES-GCM] Salvando dados protegidos (iv:tag:cipher): ${conteudoSeguro.substring(0, 30)}...`);
 
-    const sql = `INSERT INTO notas (usuario_id, titulo, conteudo) VALUES (${req.usuarioLogado.id}, '${titulo}', '${conteudo}')`;
+    const sql = `INSERT INTO notas (usuario_id, titulo, conteudo) VALUES (${req.usuarioLogado.id}, '${titulo}', '${conteudoSeguro}')`;
     
     db.query(sql, (err) => {
         if (err) return res.status(500).json({ message: "Erro ao salvar nota." });
-        res.json({ message: "Nota salva no servidor hostil com sucesso!" });
+        res.json({ message: "Nota armazenada e blindada com AES-256-GCM!" });
     });
 });
-
 
 // rota de notas
 app.get('/api/notes/:id', autenticarToken, (req, res) => {
@@ -156,7 +192,17 @@ app.get('/api/notes/:id', autenticarToken, (req, res) => {
     }
 
     if (result.length > 0) {
-      res.json(result[0]);
+      const nota = result[0];
+      try {
+          // TENTA DESCRIPTOGRAFAR E VERIFICAR INTEGRIDADE DO TEXTO CIFRADO
+          const conteudoOriginal = descriptografarNota(nota.conteudo);
+          nota.conteudo = conteudoOriginal;
+          res.json(nota);
+      } catch (error) {
+          // tratamento de erro de integridade (Tag de Autenticação GCM violada)
+          console.log("🚨 ALERTA DE SEGURANÇA: A tag de integridade do AES-GCM falhou.");
+          res.status(400).json({ message: "ERRO DE INTEGRIDADE: Os dados desta nota foram adulterados diretamente no banco de dados!" });
+      }
     } else {
       // tratamento de erro
       res.status(404).json({ message: "Nota não encontrada." });
